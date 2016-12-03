@@ -19,6 +19,8 @@ bot.dialog('/', intents);
 
 //bot dialogues
 var rando = 0;
+var timer = 0;
+var endTime = 0;
 intents.matches(/^play music/i, [
         function (session) {
             session.send('Stop there, and let me correct it, I wanna live my life from a new perspective.');
@@ -49,9 +51,14 @@ intents.matches(/^play opposites/i, [
             session.send('forwards');
         if (rando == 3)
             session.send('backwards');
+        var count = 0;
+        timer = Date.now();
     },
     function (session, results) {
-        if ((rando == 0) && (results.response == "right"))
+        endTime = Date.now();
+        if (endTime - timer > 4000)
+            session.send('Too Slow!');
+        else if ((rando == 0) && (results.response == "right"))
             session.send('Correct!');
         else if (rando == 1 && results.response == "left")
             session.send('Correct!');
