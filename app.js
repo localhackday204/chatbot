@@ -39,7 +39,28 @@ intents.matches(/^change name/i, [
 ]);
 intents.matches(/^play opposites/i, [
     function (session) {
-        session.beginDialog('/opposites');
+        builder.Prompts.text(session, 'Enter the opposite!')
+        rando = Math.round(3 * Math.random());
+        if (rando == 0)
+            session.send('left');
+        if (rando == 1)
+            session.send('right');
+        if (rando == 2)
+            session.send('forwards');
+        if (rando == 3)
+            session.send('backwards');
+    },
+    function (session, results) {
+        if ((rando == 0) && (results.response == "right"))
+            session.send('Correct!');
+        else if (rando == 1 && results.response == "left")
+            session.send('Correct!');
+        else if (rando == 2 && results.response == "backwards")
+            session.send('Correct!');
+        else if (rando == 3 && results.response == "forwards")
+            session.send('Correct!');
+        else
+            session.send('Wrong!');
     }
 ])
 intents.onDefault([
@@ -64,9 +85,9 @@ bot.dialog('/profile', [
         session.endDialog();
     }
 ]);
-bot.dialog('/opposites')[
+bot.dialog('/opposites'[
     function (session) {
-        builder.Prompts.text('Enter the opposite!')
+        builder.Prompts.text(session, 'Enter the opposite!')
         rando = Math.round(3*Math.random());
         if (rando == 0)
             session.send('left');
@@ -78,7 +99,6 @@ bot.dialog('/opposites')[
             session.send('backwards');
     },
     function (session, results) {
-
         if ((rando == 0) && (results.response == "right"))
             session.send('Correct!');
         else if (rando == 1 && results.response == "left")
@@ -90,5 +110,5 @@ bot.dialog('/opposites')[
         else
             session.send('Wrong!');
     }
-]
+])
 
