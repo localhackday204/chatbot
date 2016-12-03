@@ -23,6 +23,11 @@ intents.matches(/^play music/i, [
             session.send('Stop there, and let me correct it, I wanna live my life from a new perspective.');
         }
 ]);
+intents.matches(/^play stabilo/i, [
+    function (session) {
+        session.send('Because I lied, not because I want to, but because I need to all the tiiiiime');
+    }
+])
 intents.matches(/^change name/i, [
     function (session) {
         session.beginDialog('/profile');
