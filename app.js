@@ -24,6 +24,7 @@ var timer = 0;
 var endTime = 0;
 var data = '';
 var wins = 0;
+var secretWord = '';
 
 function shuffle(array) {
     var currentIndex = array.length, temporaryValue, randomIndex;
@@ -47,6 +48,12 @@ function randomWord() {
     var wordList = ["string", "happy", "apple", "fresh", "proxy", "mouse", "crash", "scare", "pizza", "trees"]
     var selector = Math.round(wordList.length * Math.random());
     return wordList[selector];
+}
+function secretWordMaker() {
+    var wordList = ["people", "laptop", "charge", "jackal", "puzzle", "wizard", "jinxed", "jumble", "garden", "bounce"]
+    var selector = Math.round(wordList.length * Math.random());
+    return wordList[selector];
+
 }
 intents.matches(/^play music/i, [
         function (session) {
@@ -93,6 +100,7 @@ intents.matches(/^play$/i, [
 
         data = '';
         session.beginDialog('/opposites');
+        
     }
 ]);
 
@@ -134,10 +142,41 @@ bot.dialog('/opposites', [
             session.send('Wrong!');
             wins--;
         }
-        session.send("You won " + wins + "/2 games!");
-        session.endDialog();
+        session.beginDialog('/missingLetters');
+        
     }
 ]);
+
+bot.dialog('/missingLetters', [
+    function (session) {
+        secretWord = secretWordMaker();
+        var letters = secretWord.split("");
+        var remove1 = Math.round(letters.length * Math.random());
+        var remove2 = -1;
+        do {
+            remove2 = Math.round(letters.length * Math.random());
+        } while (remove2 == remove1 || remove2 < 0);
+        letters[remove1] = "_";
+        letters[remove2] = "_";
+        builder.Prompts.text(session, "Enter the secret word: " + letters.join(""));
+    },
+    function(session, results){
+        if (endTime - timer > 5000)
+            session.send('Too Slow!');
+        else if (results.response == secretWord) {
+            session.send('Correct!');
+            wins++
+        }
+        else
+            session.send('Wrong!');
+        session.send("You won " + wins + "/3 games!");
+        session.endDialog();
+
+
+    }
+
+    
+])
 intents.onDefault([
     function (session, args, next) {
         if (!session.userData.name) {
