@@ -79,7 +79,7 @@ intents.matches(/^play$/i, [
 
 
     function (session) {
-        session.send("Remember: All answers must be lowercase!");
+
         wins = 0;
         data = randomWord();
         var letters = data.split("");
@@ -92,7 +92,7 @@ intents.matches(/^play$/i, [
         endTime = Date.now();
         if (endTime - timer > 10000)
             session.send('Too Slow!');
-        else if (results.response == data) {
+        else if (results.response.toLowerCase() == data) {
             session.send('Correct!');
             wins++
         }
@@ -131,13 +131,13 @@ bot.dialog('/opposites', [
             session.send('Too Slow!');
             wins--;
         }
-        else if ((rando == 0) && (results.response == "right"))
+        else if ((rando == 0) && (results.response.toLowerCase() == "right"))
             session.send('Correct!');
-        else if (rando == 1 && results.response == "left")
+        else if (rando == 1 && results.response.toLowerCase() == "left")
             session.send('Correct!');
-        else if (rando == 2 && results.response == "backwards")
+        else if (rando == 2 && results.response.toLowerCase() == "backwards")
             session.send('Correct!');
-        else if (rando == 3 && results.response == "forwards")
+        else if (rando == 3 && results.response.toLowerCase() == "forwards")
             session.send('Correct!');
         else {
             session.send('Wrong!');
@@ -164,7 +164,7 @@ bot.dialog('/missingLetters', [
     function(session, results){
         if (endTime - timer > 10000)
             session.send('Too Slow!');
-        else if (results.response == secretWord) {
+        else if (results.response.toLowerCase() == secretWord) {
             session.send('Correct!');
             wins++
         }
