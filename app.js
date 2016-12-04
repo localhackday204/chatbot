@@ -43,7 +43,7 @@ function shuffle(array) {
     return array;
 }
 function randomWord() {
-    var wordList = ["string", "happy", "apple", "fresh", "proxy", "mouse", "crash", "scare", "flesh", "trees"]
+    var wordList = ["string", "happy", "apple", "fresh", "proxy", "mouse", "crash", "scare", "pizza", "trees"]
     var selector = Math.round(wordList.length * Math.random());
     return wordList[selector];
 }
@@ -65,13 +65,9 @@ intents.matches(/^change name/i, [
         session.send('Ok... Changed your name to %s', session.userData.name);
     }
 ]);
-intents.matches(/^play/i, [
-    function (session) {
-        session.beginDialog('/opposites');
-      //  session.beginDialog('/anagram');
-    }
-])
-bot.dialog('/anagram', [
+
+
+intents.matches(/^play$/i, [
 
 
     function (session) {
@@ -84,34 +80,39 @@ bot.dialog('/anagram', [
 
     function (session, results) {
         endTime = Date.now();
-        if (endTime - timer > 5000) 
+        if (endTime - timer > 5000)
             session.send('Too Slow!');
-        
-        else if (results.response == data)
+
+        else if (results.response == data) {
             session.send('Correct!');
+            data = '';
+            session.beginDialog('/opposites');
+        }
+
         else
             session.send('Wrong!');
     }
-        
-    
-    
-])
+]);
+
+
+
+
+   
 bot.dialog('/opposites', [
-    function (session) {
-        builder.Prompts.text(session, 'Enter the opposite!');
-        rando = Math.round(3 * Math.random());
-        if (rando == 0)
-            session.send('left');
-        if (rando == 1)
-            session.send('right');
-        if (rando == 2)
-            session.send('forwards');
-        if (rando == 3)
-            session.send('backwards');
-        var count = 0;
-        timer = Date.now();
-        session.send(timer);
-    },
+     function (session) {
+         builder.Prompts.text(session, 'Enter the opposite!')
+         rando = Math.round(3 * Math.random());
+         if (rando == 0)
+             session.send('left');
+         if (rando == 1)
+             session.send('right');
+         if (rando == 2)
+             session.send('forwards');
+         if (rando == 3)
+             session.send('backwards');
+         var count = 0;
+         timer = Date.now();
+     },
     function (session, results) {
         endTime = Date.now();
         if (endTime - timer > 4000)
@@ -128,7 +129,7 @@ bot.dialog('/opposites', [
             session.send('Wrong!');
         session.endDialog();
     }
-])
+]);
 intents.onDefault([
     function (session, args, next) {
         if (!session.userData.name) {
