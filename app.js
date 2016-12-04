@@ -23,6 +23,7 @@ var rando = 0;
 var timer = 0;
 var endTime = 0;
 var data = '';
+var wins = 0;
 
 function shuffle(array) {
     var currentIndex = array.length, temporaryValue, randomIndex;
@@ -71,6 +72,7 @@ intents.matches(/^play$/i, [
 
 
     function (session) {
+        wins = 0;
         data = randomWord();
         var letters = data.split("");
         var shuffled = shuffle(letters);
@@ -82,15 +84,15 @@ intents.matches(/^play$/i, [
         endTime = Date.now();
         if (endTime - timer > 5000)
             session.send('Too Slow!');
-
         else if (results.response == data) {
             session.send('Correct!');
-            data = '';
-            session.beginDialog('/opposites');
+            wins++
         }
-
         else
             session.send('Wrong!');
+
+        data = '';
+        session.beginDialog('/opposites');
     }
 ]);
 
@@ -115,8 +117,11 @@ bot.dialog('/opposites', [
      },
     function (session, results) {
         endTime = Date.now();
-        if (endTime - timer > 4000)
+        wins++
+        if (endTime - timer > 4000) {
             session.send('Too Slow!');
+            wins--;
+        }
         else if ((rando == 0) && (results.response == "right"))
             session.send('Correct!');
         else if (rando == 1 && results.response == "left")
@@ -125,8 +130,11 @@ bot.dialog('/opposites', [
             session.send('Correct!');
         else if (rando == 3 && results.response == "forwards")
             session.send('Correct!');
-        else
+        else {
             session.send('Wrong!');
+            wins--;
+        }
+        session.send("You won " + wins + "/2 games!");
         session.endDialog();
     }
 ]);
