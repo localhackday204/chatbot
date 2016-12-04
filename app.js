@@ -79,6 +79,7 @@ intents.matches(/^play$/i, [
 
 
     function (session) {
+        session.send("Remember: All answers must be lowercase!");
         wins = 0;
         data = randomWord();
         var letters = data.split("");
@@ -89,7 +90,7 @@ intents.matches(/^play$/i, [
 
     function (session, results) {
         endTime = Date.now();
-        if (endTime - timer > 8000)
+        if (endTime - timer > 10000)
             session.send('Too Slow!');
         else if (results.response == data) {
             session.send('Correct!');
@@ -126,7 +127,7 @@ bot.dialog('/opposites', [
     function (session, results) {
         endTime = Date.now();
         wins++
-        if (endTime - timer > 8000) {
+        if (endTime - timer > 10000) {
             session.send('Too Slow!');
             wins--;
         }
@@ -161,7 +162,7 @@ bot.dialog('/missingLetters', [
         builder.Prompts.text(session, "Enter the secret word: " + letters.join(""));
     },
     function(session, results){
-        if (endTime - timer > 8000)
+        if (endTime - timer > 10000)
             session.send('Too Slow!');
         else if (results.response == secretWord) {
             session.send('Correct!');
