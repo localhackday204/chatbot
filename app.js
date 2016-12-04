@@ -1,6 +1,7 @@
 // JavaScript source code
 var restify = require('restify');
 var builder = require('botbuilder')
+var http = require('http')
 //setup restify server
 var server = restify.createServer();
 server.listen(process.env.port || process.env.PORT || 3978, function () {
@@ -21,6 +22,31 @@ bot.dialog('/', intents);
 var rando = 0;
 var timer = 0;
 var endTime = 0;
+var data = '';
+
+function shuffle(array) {
+    var currentIndex = array.length, temporaryValue, randomIndex;
+
+    // While there remain elements to shuffle...
+    while (0 !== currentIndex) {
+
+        // Pick a remaining element...
+        randomIndex = Math.floor(Math.random() * currentIndex);
+        currentIndex -= 1;
+
+        // And swap it with the current element.
+        temporaryValue = array[currentIndex];
+        array[currentIndex] = array[randomIndex];
+        array[randomIndex] = temporaryValue;
+    }
+
+    return array;
+}
+function randomWord() {
+    var wordList = ["string", "happy", "apple", "fresh", "proxy", "mouse", "crash", "scare", "flesh", "trees"]
+    var selector = Math.round(wordList.length * Math.random());
+    return wordList[selector];
+}
 intents.matches(/^play music/i, [
         function (session) {
             session.send('Stop there, and let me correct it, I wanna live my life from a new perspective.');
@@ -39,6 +65,31 @@ intents.matches(/^change name/i, [
         session.send('Ok... Changed your name to %s', session.userData.name);
     }
 ]);
+intents.matches(/^play anagram/i, [
+
+
+    function (session) {
+        data = randomWord();
+        var letters = data.split("");
+        var shuffled = shuffle(letters);
+        builder.Prompts.text(session, ('Solve the anagram: ' + shuffled.join("")))
+        timer = Date.now();
+    },
+
+    function (session, results) {
+        endTime = Date.now();
+        if (endTime - timer > 5000) 
+            session.send('Too Slow!');
+        
+        else if (results.response == data)
+            session.send('Correct!');
+        else
+            session.send('Wrong!');
+    }
+        
+    
+    
+])
 intents.matches(/^play opposites/i, [
     function (session) {
         builder.Prompts.text(session, 'Enter the opposite!')
