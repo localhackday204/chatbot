@@ -155,9 +155,9 @@ bot.dialog('/missingLetters', [
         var remove2 = -1;
         do {
             remove2 = Math.round(letters.length * Math.random());
-        } while (remove2 == remove1 || remove2 < 0);
-        letters[remove1] = "_";
-        letters[remove2] = "_";
+        } while (remove2 == remove1 || remove2 < 0 || remove2 >letters.length);
+        letters[remove1] = "%";
+        letters[remove2] = "%";
         builder.Prompts.text(session, "Enter the secret word: " + letters.join(""));
     },
     function(session, results){
