@@ -25,6 +25,7 @@ var endTime = 0;
 var data = '';
 var wins = 0;
 var secretWord = '';
+var bandFound = false;
 
 function shuffle(array) {
     var currentIndex = array.length, temporaryValue, randomIndex;
@@ -44,6 +45,12 @@ function shuffle(array) {
 
     return array;
 }
+
+var bandList = ["maroon 5", "beatles", "the beatles", "taylor swift", "billy joel", "michael jackson", "adele",
+    "stabilo", "panic at the disco", "elton john", "green day", "eminem",
+    "avenged sevenfold", "fall out boy", "barenaked ladies", "elvis", "elvis presley", "the police", "police",];
+var badBandList = ["blood on the dance floor", "kidz bop", "mini pop kids","nicki minaj"]
+var newBandList = [];
 function randomWord() {
     var wordList = ["string", "happy", "apple", "fresh", "proxy", "mouse", "crash", "scare", "pizza", "trees"]
     var selector = Math.round(wordList.length * Math.random());
@@ -73,6 +80,48 @@ intents.matches(/^change name/i, [
         session.send('Ok... Changed your name to %s', session.userData.name);
     }
 ]);
+
+intents.matches(/^music/i, [
+    function (session) {
+        builder.Prompts.text(session, 'Who is your favourite  band or singer?')
+    },
+    function (session, results) {
+        bandFound = false;
+        if (results.response.toLowerCase() == "insane clown posse") {
+            session.send("******* magnets man, how do they work?");
+            bandFound = true;
+        }
+        if (results.response.toLowerCase() == "the shaggs") {
+            session.send("On the one hand, I'm genuinely surprised that you're familiar with the shaggs, but on the other hand... really?");
+            session.send("Your favourite?");
+            bandFound = true;
+        }
+        for (var i = 0; i < bandList.length; i++) {
+            if (results.response.toLowerCase() == bandList[i]) {
+                session.send('Oh, I love them! You have excellent taste.');
+                bandFound = true;
+            }
+        }
+        for (var i = 0; i < badBandList.length; i++) {
+            if (results.response.toLowerCase() == badBandList[i]) {
+                session.send("Dude........seriously?");
+                bandFound = true;
+            }
+        }
+        for (var i = 0; i < newBandList.length; i++) {
+            if (results.response.toLowerCase() == newBandList[i]) {
+                session.send('Oh, I think you told me about them.');
+                bandFound = true;
+            }
+        }
+        if (!bandFound) {
+            session.send('Hmm, I\'ve never heard of them...');
+            newBandList.push(results.response.toLowerCase());
+        }
+    }
+
+    
+])
 
 
 intents.matches(/^play$/i, [
@@ -106,7 +155,23 @@ intents.matches(/^play$/i, [
 ]);
 
 
-
+intents.matches(/^reset$/i, [
+    function (session) {
+        builder.Prompts.text(session, 'Are you sure you want to reset me?')
+    },
+    function (session, results) {
+        if (results.response.toLowerCase() == "no")
+            session.send('Well alright then.');
+        else if (results.response.toLowerCase() == "yes") {
+            session.send('If you say so...');
+            newBandList = [];
+            session.send('Reset successful.');
+            session.beginDialog('/profileReset');
+        }
+        else
+            session.send('Sorry, I didn\'t understand that.');
+    }
+]);
 
    
 bot.dialog('/opposites', [
@@ -188,6 +253,7 @@ intents.onDefault([
     },
     function (session, results) {
         session.send('Hello %s!', session.userData.name);
+        session.send('What would you like to talk about?');
     }
 ]);
 
@@ -200,5 +266,17 @@ bot.dialog('/profile', [
         session.endDialog();
     }
 ]);
+
+bot.dialog('/profileReset', [
+    function (session) {
+        builder.Prompts.text(session, 'Hi! What is your name?');
+    },
+    function (session, results) {
+        session.userData.name = results.response;
+        session.send('Hello %s!', session.userData.name);
+        session.send('What would you like to talk about?');
+        session.endDialog();
+    }
+])
 
 
